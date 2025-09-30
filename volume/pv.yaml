@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: my-pv
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce # can be mounted as read-write by a single node
+  persistentVolumeReclaimPolicy: Recycle # Retain, Recycle, Delete
+  storageClassName: standard
+  hostPath:
+    path: /mnt/data
