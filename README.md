@@ -20,75 +20,65 @@ It helps you automate the deployment, scaling, and management of containerized a
 
 ---
 
-## Core Components of Kubernetes
-1. API Server – Entry point for all commands.
-2. etcd – Key-value store for cluster state.
-3. Controller Manager – Ensures cluster desired state.
-4. Scheduler – Assigns Pods to Nodes.
-5. Kubelet – Agent running on each node.
-6. Kube-proxy – Handles networking & load balancing.
-7. Pod – Smallest deployable unit.
+# Core Components of Kubernetes
+1.Control Plane Components (Brain of Kubernetes)
+These components make cluster-wide decisions (scheduling, scaling, health checks).
 
+2.API Server (kube-apiserver)
+Entry point for all Kubernetes commands (kubectl, dashboard, APIs).
+Works as a front-end of Kubernetes.
+
+3.etcd
+A distributed key-value store.
+Stores the cluster state, configs, secrets, etc.
+Acts like Kubernetes’ database.
+
+4.Scheduler (kube-scheduler)
+Decides which node should run a Pod based on resource availability.
+Checks resource availability (CPU, memory).
+
+
+4.Controller Manager (kube-controller-manager)
+Runs controllers that handle background tasks:
+Node Controller (detects node failures)
+Replication Controller (ensures correct Pod count)
+Endpoint Controller (updates services & pods)
+
+Cloud Controller Manager (optional)
+Integrates Kubernetes with cloud providers (AWS, GCP, Azure).
+Manages cloud-specific resources like load balancers, volumes.
+
+# Node Components (Worker Nodes)
+
+These run the actual application workloads.
+1.kubelet
+Agent running on each node.
+Ensures containers in a Pod are running as expected.
+
+2.kube-proxy
+Handles networking and routing.
+Forwards traffic to correct Pods (load balancing).
+
+3.Container Runtime
+Software that actually runs containers.
+Examples: Docker, containerd, CRI-O.
+
+## 
+Minikube → Learning & practicing Kubernetes locally.
+Kind → Lightweight clusters inside Docker (great for CI/CD testing).
+Kubeadm → Setting up real, production-like Kubernetes clusters.
+
+##  Additional Concepts
+
+(Not "components," but essential to Kubernetes functioning)
+
+Pod → Smallest deployable unit (one or more containers together).
+Service → Provides stable networking & load balancing for Pods.
+ConfigMap & Secret → Stores configuration and sensitive data.
+Volume → Storage for Pods.
 ---
 
-## Minikube, Kind, Kubeadm
-- **Minikube** – Run Kubernetes locally in VM/Container (for practice).
-- **Kind** – Runs Kubernetes clusters inside Docker containers (lightweight).
-- **Kubeadm** – Tool to bootstrap a production-like Kubernetes cluster.
-
----
-
-##  Kubernetes Objects
-- **Service** → Exposes Pods to network.
-- **Replication Controller** → Ensures a specific number of Pods.
-- **ReplicaSet** → Newer version of Replication Controller.
-- **Deployment** → Manages ReplicaSets & supports rollout strategies.
-- **StatefulSet** → For stateful apps (databases, unique Pod IDs).
-- **DaemonSet** → Runs one Pod on every Node.
-- **ConfigMap** → Stores configuration data.
-- **Secret** → Stores sensitive data (passwords, keys).
-
----
-
-## General Requirements for Installing Kubernetes
-1. Hardware Requirements
-
-Control Plane Node (Master)
-Minimum: 2 CPUs, 2 GB RAM
-Recommended: 2+ CPUs, 4 GB RAM or more
-Worker Nodes
-Minimum: 1 CPU, 2 GB RAM
-Recommended: 2+ CPUs, 4 GB RAM (depends on workloads)
-Disk Space
-At least 20 GB free disk space per node
-
-2. Operating System
-
-3. Networking Requirements
-
-4. Software Requirements
-Container Runtime (choose one):
-1.containerd (preferred)
-2.CRI-O
-3.Docker (deprecated, but still usable via cri-dockerd)
-kubeadm, kubelet, kubectl (if using kubeadm)
-CNI (Container Network Interface) plugin (like Calico, Flannel, Weave, Cilium)
-
-## minikube installation On Windows:
-1.Install docker - docker --version
-2.Install minikube  - minikube version 
-3.Install kubectl - kubectl version --client
-
-Installation link: https://minikube.sigs.k8s.io/docs/start/?arch=%2Fwindows%2Fx86-64%2Fstable%2Fwindows+package+manager
 ```bash
-winget install Kubernetes.minikube
-minikube version 
-minikube start --driver=docker OR//
-minikube start --driver=virtualbox
-minikube status
-minikube stop 
-minikube delete
-
 kubectl cluster-info
 kubectl get nodes -o wide 
 ```
@@ -101,14 +91,11 @@ kubectl delete pod my-pod
 kubectl get pods -w
 
 # application access 
-minikube ssh 
 curl <pod Ip>:port (inside the cluster)
 ```
 # expose pod 
 ```bash
 kubectl expose pod my-pod --name my-svc --type NodePort --port 80
-minikube service my-pod curl 192.168.49.2:31698 (access ur pod outside the container after expose)
-minikube service my-pod ->(If you want to avoid remembering NodeIP + NodePort, you can directly run)
 OR/ curl <node_IP>:<node_port>
 ```
 
@@ -129,7 +116,6 @@ kubectl get pods --namespace kube-system
 kubectl create namespace dev
 kubectl get pods -n dev
 kubectl run <podname> --image=nginx -n dev (#Create a Pod in dev namespace)
-minikube service nginx -n dev 
 ```
 ## Lists all available resource types in Kubernetes.
 ```bash
@@ -163,9 +149,6 @@ kubectl expose pod my-pod
 kubect expose my-app --image nginx --port 80
 kubectl expose pod nginx -n dev --type NodePort --port 80 (-n dev / if our service is in diff namespace)
 
-# Get URL (Minikube only)
-minikube service nginx -n dev
-```
 ## Goto inside the container
 ```bash
 kubectl exec -it -n dev mypod -- bash

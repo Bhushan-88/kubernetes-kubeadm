@@ -3,7 +3,7 @@
 Master Node VM (2 CPUs, 2–4 GB RAM, 20 GB disk).
 Worker Node(s) VM (1–2 CPUs, 2 GB RAM each, 15 GB disk).
 
-MASTER NODE SETUP (192.168.1.10)
+# MASTER NODE SETUP (192.168.1.10)
 Step 0: Prerequisites
 ```bash
 # Update system packages
@@ -20,7 +20,7 @@ sudo vim /etc/hosts
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab
 ```
-Step 1: Install Docker
+# Step 1: Install Docker
 ```bash
 sudo apt install -y curl apt-transport-https ca-certificates software-properties-common gnupg lsb-release
 
@@ -43,7 +43,8 @@ cat <<EOF | sudo tee /etc/docker/daemon.json
 EOF
 sudo systemctl restart docker
 ```
-Step 2: Install Kubernetes Binaries
+# Step 2: Install Kubernetes Binaries
+kubeadm, kubelet, kubectl (if using kubeadm)
 ```bash
 # Add Kubernetes repo
 sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /usr/share/keyrings/kubernetes-archive-keyring.gpg
@@ -54,7 +55,13 @@ sudo apt update
 sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
-Step 3: Install cri-dockerd (Docker shim)
+# Step 3: Install cri-dockerd (Docker shim)
+CNI (Container Network Interface) plugin (like Calico, Flannel, Weave, Cilium)
+Software Requirements
+Container Runtime (choose one):
+1.containerd (preferred)
+2.CRI-O
+3.Docker (deprecated, but still usable via cri-dockerd)
 ```bash
 # Install Go (needed for building cri-dockerd)
 sudo apt install -y golang-go git
@@ -81,7 +88,7 @@ sudo systemctl enable --now cri-docker.service
 sudo systemctl enable --now cri-docker.socket
 
 ```
-Step 4: Initialize Kubernetes Master
+# Step 4: Initialize Kubernetes Master
 ```bash
 sudo kubeadm init \
   --apiserver-advertise-address=192.168.1.10 \
@@ -89,7 +96,7 @@ sudo kubeadm init \
   --cri-socket unix:///var/run/cri-dockerd.sock
 
 ```
-Step 5: Configure kubectl
+# Step 5: Configure kubectl
 ```bash
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
@@ -98,7 +105,7 @@ kubectl get nodes
 
 ```
 
-Step 6: Install Calico CNI
+# Step 6: Install Calico CNI
 ```bash
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 kubectl get pods -n kube-system
@@ -143,7 +150,7 @@ sudo hostnamectl set-hostname k8s-master
 sudo swapoff -a
 sudo sed -i '/ swap / s/^/#/' /etc/fstab
 ```
-Step 1: Install Docker (same as master)
+# Step 1: Install Docker (same as master)
 ```bash
 # Same Docker install and cgroup configuration as master
 Why:
@@ -172,7 +179,7 @@ EOF
 sudo systemctl restart docker
 ```
 
-Step 2: Install Kubernetes Binaries
+# Step 2: Install Kubernetes Binaries
 ```bash
 # Same kubeadm, kubelet, kubectl installation as master
 Why:
@@ -189,7 +196,7 @@ sudo apt update
 sudo apt install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 ```
-Step 3: Install cri-dockerd (Docker shim)
+# Step 3: Install cri-dockerd (Docker shim)
 ```bash
 # Install Go (needed for building cri-dockerd)
 sudo apt install -y golang-go git
@@ -219,7 +226,7 @@ Why:
 Kubernetes v1.24+ removed Docker support.
 cri-dockerd allows kubelet to use Docker as container runtime.
 ```
-Step 4: Join Worker Node
+# Step 4: Join Worker Node
 ```bash
 kubeadm join 192.168.1.10:6443 
 --token epe931.le2jijd0fup4v0rx \
