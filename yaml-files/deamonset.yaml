@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet # DaemonSet to ensure a pod runs on all nodes
+metadata:
+  name: my-daemonset # Name of the DaemonSet
+  labels:
+    app: myapp # Label for the DaemonSet
+spec:
+  selector:
+    matchLabels:
+      app: myapp # Selector to match the pods
+  template:
+    metadata:
+      labels:
+        app: myapp # Label for the pods
+    spec:
+      containers:
+        - name: nginx # Container name
+          image: nginx # Container image
+          ports:
+            - name: http # Port name
+              containerPort: 80

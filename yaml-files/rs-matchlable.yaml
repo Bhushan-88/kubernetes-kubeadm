@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-rs-1 # Name of the Replicaset
+  labels: 
+    app: my-rs  # Label for the Replicaset
+spec:
+  replicas: 1 # Number of pod replicas
+  selector: 
+    matchLabels:
+      app: myapp-n # Selector to match the pods
+  template:
+    metadata:
+      labels:
+        app: myapp-n # Label for the pods
+    spec:
+      containers:
+        - name: nginx-container # Container name
+          image: nginx # Container image
+          ports:
+            - name: http # Port name
+              containerPort: 80
+...
+---
+apiVersion: v1
+kind: Service # Service to expose the pods
+metadata:
+  name: my-svc-rs-1 # Name of the Service
+  labels:
+    env: dev # Label for the Service
+spec:
+  type: NodePort # Service type
+  selector: 
+    app: myapp-n # Selector to match the pods
+  ports: 
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP

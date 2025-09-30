@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet # StatefulSet to manage the stateful application
+metadata:
+  name: my-statefulset # Name of the StatefulSet
+  labels:
+    app: web-app # Label for the StatefulSet
+spec:
+  replicas: 3 # Number of pod replicas
+  selector:
+    matchLabels:
+      app: web-app # Selector to match the pods
+  template:
+    metadata:
+      labels:
+        app: web-app # Label for the pods
+    spec:
+      containers:
+        - name: mariadb-container # Container name
+          image: mariadb # Container image
+          ports:
+            - name: mysql # Port name
+              containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mysql_password
+                  name: db-secret
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  key: mysql_username
+                  name: db-secret
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mysql_password
+                  name: db-secret

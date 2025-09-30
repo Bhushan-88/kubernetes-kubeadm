@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service # Service to expose the pods
+metadata:
+  name: men-app-home # Name of the Service
+spec:
+  selector: 
+    app: men-app-home # Selector to match the pods
+  ports: 
+    - name: http
+      port: 80
+      targetPort: 80
+---
+
+apiVersion: v1
+kind: Service # Service to expose the pods
+metadata:
+  name: men-app-mobile # Name of the Service
+spec:
+  selector: 
+    app: men-app-mobile # Selector to match the pods
+  ports: 
+    - name: nginx
+      port: 8080
+      targetPort: 8080

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: men-app-ingress
+  labels:
+    name: men-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /  # Annotation to rewrite the URL path
+spec:
+  rules:
+  - host: mentore.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: men-app-home
+            port: 
+              number: 80
+              
+      - pathType: Prefix
+        path: "/mobile"
+        backend:
+          service:
+            name: men-app-mobile
+            port: 
+              number: 80

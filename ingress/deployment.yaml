@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment # Deployment to manage the pods
+metadata:
+  name: mentore-deploy-home # Name of the Deployment
+spec:
+  selector:
+    matchLabels:
+      app: men-app-home # Selector to match the pods
+  template:
+    metadata:
+      labels:
+        app: men-app-home # Label for the pods
+    spec:
+      containers:
+        - name: men-container # Name of the container
+          image: httpd # Container image
+          ports:
+            - containerPort: 80 # Port exposed by the container
+---
+apiVersion: apps/v1
+kind: Deployment # Deployment to manage the pods
+metadata:
+  name: mentore-deploy-mobile # Name of the Deployment
+spec:
+  selector:
+    matchLabels:
+      app: men-app-mobile # Selector to match the pods
+  template:
+    metadata:
+      labels:
+        app: men-app-mobile # Label for the pods
+    spec:
+      containers:
+        - name: men-container # Name of the container
+          image: nginx # Container image
+          ports:
+            - containerPort: 80 # Port exposed by the container
